@@ -51,7 +51,7 @@ dm = data.frame(word=names(word_freqs), freq=word_freqs)
 head(dm,10)
 
 # visualizzazione della nuvola di parole
-install.packages("wordcloud")
+#install.packages("wordcloud")
 library(wordcloud)
 wordcloud(dm$word, dm$freq,c(1,.3), min.freq=50,
           random.order=F, colors=brewer.pal(8, "Dark2"))
@@ -107,3 +107,20 @@ wordcloud(dm_rid[dm_rid$catgr=="G","lemma"],
           colors=rev(brewer.pal(9, "Set1"))) #wc solo aggettivi
 
 display.brewer.all()
+
+#comparison cloud e commonality cloud
+#carico funzione lemmatiz
+
+#prende in in input il df di una tdm
+tdm_1
+data.frame(as.matrix(tdm_1))
+confronti <- lemmatiz(data.frame(as.matrix(tdm_1)),comparison = T)
+head(confronti)
+par(mar=c(2,2,2,2))
+comparison.cloud(confronti[,3:12], random.order=FALSE, scale = c(2.6,0.2), max.words=100, colors = 1:10, title.size=1.3)
+text(0.2,1,"Comparison Cloud",cex=1.3,family = "mono", font = 2)
+###OK. è un inizio. bisogna pulirla da tutti i numeri e raggruppare gli anni!
+
+mycol2 <- c("blue2","darkmagenta","green4","darkcyan","goldenrod3","lightblue3")
+commonality.cloud(confronti[-1,3:12],max.words = 150,random.order=FALSE,col=rev(mycol2))
+text(0.5,1,"Commonality Cloud lemmatizzata",cex=1.3,family = "mono", font = 2)
