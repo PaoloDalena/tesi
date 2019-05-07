@@ -211,3 +211,79 @@ grid()
 
 # Degno di nota anche
 plot(tag_cf08)
+
+# Facciamolo manualmente solo con ciò che mi interessa
+table(taggedText(tag_cf08)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")]
+pie(
+  table(
+    taggedText(tag_cf08)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")],
+  col = brewer.pal(5, "Blues"),
+  main = "Parti del discorso cf08"
+)
+
+pie(
+  table(
+    taggedText(tag_cf09)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")],
+  col = brewer.pal(5, "Blues"),
+  main = "Parti del discorso cf09"
+)
+
+pie(
+  table(
+    taggedText(tag_cf10)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")],
+  col = brewer.pal(5, "Blues"),
+  main = "Parti del discorso cf10"
+)
+
+pie(
+  table(
+    taggedText(tag_cf11)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")],
+  col = brewer.pal(5, "Blues"),
+  main = "Parti del discorso cf11"
+)
+
+pie(
+  table(
+    taggedText(tag_cf12)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")],
+  col = brewer.pal(5, "Blues"),
+  main = "Parti del discorso cf12"
+)
+
+pie(
+  table(
+    taggedText(tag_cf13)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")],
+  col = brewer.pal(5, "Blues"),
+  main = "Parti del discorso cf13"
+)
+
+pie(
+  table(
+    taggedText(tag_cf14)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")],
+  col = brewer.pal(5, "Blues"),
+  main = "Parti del discorso cf14"
+)
+
+pie(
+  table(
+    taggedText(tag_cf15)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")],
+  col = brewer.pal(5, "Blues"),
+  main = "Parti del discorso cf15"
+)
+
+pie(
+  table(
+    taggedText(tag_cf16)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")],
+  col = brewer.pal(5, "Blues"),
+  main = "Parti del discorso cf16"
+)
+
+pie(
+  table(
+    taggedText(tag_cf17)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")],
+  col = brewer.pal(5, "Blues"),
+  main = "Parti del discorso cf17"
+)
+par(mfrow = c(3,3)) # praticamente tutti la stessa cosa
+par(mar=c(0,0,0,0))
+
+
