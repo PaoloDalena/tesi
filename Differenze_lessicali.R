@@ -138,6 +138,7 @@ barplot(numero_parole,
         ylab = "Numero di parole",
         main = "Numero di parole nelle cf negli anni",
         col = rainbow(10))
+grid()
 
 # Numero delle frasi
 numero_frasi <- NULL
@@ -151,6 +152,7 @@ barplot(numero_frasi,
         ylab = "Numero di frasi",
         main = "Numero di frasi nelle cf negli anni",
         col = rainbow(10))
+grid()
 
 # Lunghezza media delle parole
 media_parole <- NULL
@@ -183,6 +185,10 @@ barplot(media_frasi,
         main = "Lunghezza media delle frasi nelle cf negli anni",
         col = rainbow(10))
 grid()
+
+
+#par(mfrow=c(2,2))
+
 
 # MTLD - measure of textual lexical diversity
 # Misura della ricchezza del lessico
