@@ -1,4 +1,6 @@
 # Costruzione corpus taggati con tm.plugin.koRpus
+library(tm)
+library(tm.plugin.koRpus)
 
 set.kRp.env(
   TT.cmd = "manual",

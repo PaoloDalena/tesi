@@ -1,8 +1,13 @@
 # Casino necessario alla wordcloud lemmatizzata
+library(koRpus)
+library(koRpus.lang.it)
+library(dplyr)
+library(wordcloud)
+
 tag_cf08
 df <- taggedText(tag_cf08)
 str(df)
-library(dplyr)
+
 
 df_lem_tag <- df[,c("lemma","wclass")]
 table(df[,"lemma"])
@@ -40,7 +45,8 @@ wordcloud(
   c(3,0),
   max.words = 150,
   random.order=FALSE,
-  colors=rev(brewer.pal(8, "Dark2"))
+  colors=rev(brewer.pal(8, "Dark2")),
+  family = "mono"
 )
 text(0.5,1,"Wordcloud aggettivi treetagger cf_08",cex=1,family = "mono", font = 2)
 
@@ -57,6 +63,9 @@ text(0.5,1,"Wordcloud aggettivi treetagger cf_08",cex=1,family = "mono", font = 
 
 
 # creo testi taggati divisi per periodi
+mystop <- c("banca","banche","italia","anno","anni","considerazione",
+            "considerazioni","finale","paese","paesi")
+
 tag_cf080910 <- treetag(
   here('cf_txt','cf080910.txt'),
   treetagger="manual",
@@ -66,7 +75,7 @@ tag_cf080910 <- treetag(
     preset="it"
   ),
   doc_id="cf080910",
-  stopwords=c(tm::stopwords("it"),"banca","banche","italia","anno")
+  stopwords=c(tm::stopwords("it"),mystop)
 )
 
 tag_cf11121314 <- treetag(
@@ -78,7 +87,7 @@ tag_cf11121314 <- treetag(
     preset="it"
   ),
   doc_id="cf1121314",
-  stopwords=c(tm::stopwords("it"),"banca","banche","italia","anno")
+  stopwords=c(tm::stopwords("it"), mystop)
 )
 
 tag_cf151617 <- treetag(
@@ -90,7 +99,7 @@ tag_cf151617 <- treetag(
     preset="it"
   ),
   doc_id="cf151617",
-  stopwords=c(tm::stopwords("it"),"banca","banche","italia","anno")
+  stopwords=c(tm::stopwords("it"), mystop)
 )
 
 # wordcloud per periodi
@@ -98,11 +107,14 @@ df_p1 <- taggedText(tag_cf080910)
 df_lem_tag_p1 <- df_p1[,c("lemma","wclass")]
 df_freq_p1 <- as.data.frame(table(df_p1[,"lemma"]))
 names(df_freq_p1)[1] <- "lemma"
+library(dplyr)
 df_tot_rep_p1 <- left_join(df_lem_tag_p1, df_freq_p1, by="lemma")
 df_tot_p1 <- unique(df_tot_rep_p1)
 df_tot_p1 <- df_tot_p1[df_tot_p1$lemma!="<unknown>",]
 df_tot_p1 <- df_tot_p1[df_tot_p1$lemma!="anno",]
 df_tot_p1 <- df_tot_p1[df_tot_p1$lemma!="banca",]
+df_tot_p1 <- df_tot_p1[df_tot_p1$lemma!="paese",]
+df_tot_p1 <- df_tot_p1[df_tot_p1$lemma!="considerazione",]
 
 wordcloud(
   df_tot_p1[df_tot_p1$wclass=="noun","lemma"],
@@ -165,7 +177,7 @@ df_tot_p123 <- unique(df_tot_p123[,c(1,3,5,6,7)])
 head(df_tot_p123)
 
 nrow(df_tot_p123)
-!duplicated(df_tot_p123$lemma)
+#!duplicated(df_tot_p123$lemma)
 nrow(df_tot_p123[!duplicated(df_tot_p123$lemma),])
 
 df_tot_p123 <- df_tot_p123[!duplicated(df_tot_p123$lemma),]
@@ -175,6 +187,12 @@ rownames(df_tot_p123) <- df_tot_p123$lemma
 head(df_tot_p123)
 
 na.omit(df_tot_p123)
+
+
+df_tot_p123 <- df_tot_p123[df_tot_p123$lemma!="governatore",]
+df_tot_p123 <- df_tot_p123[df_tot_p123$lemma!="relazione",]
+
+par(mar=rep(0,4))
 comparison.cloud(
   na.omit(df_tot_p123[df_tot_p123$wclass=="noun",c("2008-2010","2011-2014","2014-2017")]),
   scale=c(3,.5),
@@ -182,7 +200,45 @@ comparison.cloud(
   random.order=FALSE,
   title.colors = "gold3",
   title.size = 1.5,
-  use.r.layout = FALSE,
+  use.r.layout = TRUE,
   title.bg.colors = "grey2",
   col = c("dodgerblue4","brown","darkgreen")
+)
+
+# Commonality cloud
+commonality.cloud(
+  na.omit(df_tot_p123[df_tot_p123$wclass=="noun",c("2008-2010","2011-2014","2014-2017")]),
+  scale=c(3,.5),
+  max.words = 150,
+  random.order=FALSE,
+  colors=rev(brewer.pal(3, "Spectral"))
+)
+
+# wordcloud2
+remove.packages("wordcloud2")
+devtools::install_github("lchiffon/wordcloud2")
+library(wordcloud2)
+wordcloud2(
+  df_tot_p1[df_tot_p1$wclass=="noun",c(1,3)],
+  size = 0.3,
+  minSize = 0,
+  rotateRatio = 0.6,
+  fontFamily = "Impact",
+  color = "random-light",
+  backgroundColor = "grey2",
+  figPath = here('img','euro.png')
+)
+
+str(df_tot_p2[df_tot_p2$wclass=="noun",c(1,3)],25)
+str(df_tot_p1[df_tot_p1$wclass=="noun",c(1,3)],25)
+
+letterCloud(
+  df_tot_p2[df_tot_p2$wclass=="noun",c(1,3)],
+  "123",
+  size = 1.2,
+  minSize = 0,
+  fontFamily = "Arial",
+  rotateRatio = 0.6,
+  color = "random-light",
+  backgroundColor = "grey2"
 )
