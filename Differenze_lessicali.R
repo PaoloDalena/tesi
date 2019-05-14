@@ -294,6 +294,8 @@ par(mfrow = c(3,3)) # praticamente tutti la stessa cosa
 par(mar=c(0,0,0,0))
 
 
+# Grafici con ggplot2 -----------------------------------------------------
+
 # rendo i grafici più fichi con ggplot
 library(ggplot2)
 qplot(x = cty, y = hwy, color = cyl, data = mpg, geom = "point")
@@ -331,18 +333,19 @@ ggplot(dfMTLD, aes(x = Anni))+
   theme(legend.position = c(0.65, 0.9))
 #ci siamo quasi, devo solo cambiare la scala
 
+#grafico potentissimo per il confronto lunghezza frasi/MTLD
 ggplot(dfMTLD, aes(x = Anni)) +
   geom_point(aes(y=media_frasi, color="Lunghezza media frasi")) +
   geom_line(aes(y=media_frasi, color="Lunghezza media frasi")) +
-  geom_point(aes(y=MTDL/8.5, color="MTDL")) +
-  geom_line(aes(y=MTDL/8.5, color="MTDL")) +
+  geom_point(aes(y=MTDL/8.5, color="MTLD")) +
+  geom_line(aes(y=MTDL/8.5, color="MTLD")) +
   scale_y_continuous(
     minor_breaks = c(18.83,21.18,22.35),
     sec.axis = sec_axis(~.*8.5, name = "Measure of Textual Lexical Diversity")
     ) +
   scale_colour_manual(values = c("grey2", "chartreuse3"))+
   labs(
-    title = "MTDL e Lunghezza media delle frasi a confronto",
+    title = "MTLD e Lunghezza media delle frasi a confronto",
     y = "Numero medio di parole per frase",
     x = "Anni",
     colour = NULL
@@ -366,8 +369,8 @@ ggplot(dfMTLD, aes(x = Anni)) +
     size.major = 0.1,
     size.minor = 0.2
     )
-ggplot2::ggsave("MTDL_frasi.png")
-
+ggplot2::ggsave("MTLD_frasi.png")
+?ggsave
 library(cowplot)
 #con i labels, figo ma incomprensibile
 head(dfMTLD,5)
@@ -411,6 +414,7 @@ a <- plot_grid(plot2, plot3, plot4, nrow=1,
           align = 'v', axis = 'l') # aligning vertically along the left axis
 plot_grid(a,plot1, nrow=2)
 
+#grafico riassuntivo delel diff lessicali
 plot1 <- ggplot(dfMTLD,aes(x=Anni)) +
   geom_line(aes(y=MTDL), color="chartreuse3") +
   geom_point(aes(y=MTDL),color=c(rep(1,5),2,1,2,2,1))+
@@ -486,4 +490,52 @@ plot4 <- ggplot(dfMTLD,aes(x=seq(8,17,1))) +
 a <- plot_grid(plot2, plot3, plot4, nrow=1,
                align = 'v', axis = 'l') # aligning vertically along the left axis
 plot_grid(a,plot1, nrow=2)
-ggplot2::ggsave("MTDL_sunto_2.png")
+ggplot2::ggsave("MTLD_sunto_2.png")
+
+#pie per le parti del testo
+pie <- table(taggedText(tag_cf080910)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")]+table(taggedText(tag_cf11121314)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")]+table(taggedText(tag_cf151617)[,"wclass"])[c("noun","verb","adjective","pronoun","adverb")]
+pie
+pie(pie)
+pie <- as.data.frame(pie)
+library(scales)
+percent(pie$Freq/sum(pie$Freq))
+
+ggplot(pie, aes(x="", y=Freq, fill=Parte_del_discorso)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start=0, direction = 2) +
+  theme_minimal()+
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.border = element_blank(),
+    panel.grid=element_blank(),
+    axis.ticks = element_blank(),
+    plot.title=element_text(size=14, face="bold")
+  ) +
+  theme(axis.text.x=element_blank()) +
+  geom_text(aes(y = Freq/5 + c(0, cumsum(Freq)[-length(Freq)]), 
+                label = percent(Freq/48860)), size=3)
+
+pie <- pie %>%
+  mutate(Prop = round(pie$Freq/sum(pie$Freq),2)) %>%
+  arrange(desc(Var1)) %>%
+  mutate(lab.ypos = cumsum(Prop) - 0.5*Prop)
+pie
+
+ggplot(pie, aes(x = "", y = Prop, fill = Var1)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0)+
+  geom_text(aes(y = lab.ypos, label = percent(Prop,accuracy = 1)), color = "black")+
+  scale_fill_brewer(palette = "BrBG") +
+  theme_void()+
+  labs(
+    title = "Distribuzione delle principali parti del dicorso",
+    x=NULL,
+    y=NULL
+    ) +
+  theme(
+  plot.title = element_text(color = "grey2",size = 16),
+  legend.title = element_text(color="white")
+  )
+
+ggplot2::ggsave("pie_partidiscorso.png")

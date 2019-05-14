@@ -135,6 +135,9 @@ df_tot_p2 <- unique(df_tot_rep_p2)
 df_tot_p2 <- df_tot_p2[df_tot_p2$lemma!="<unknown>",]
 df_tot_p2 <- df_tot_p2[df_tot_p2$lemma!="anno",]
 df_tot_p2 <- df_tot_p2[df_tot_p2$lemma!="banca",]
+df_tot_p2 <- df_tot_p2[df_tot_p2$lemma!="considerazione",]
+df_tot_p2 <- df_tot_p2[df_tot_p2$lemma!="paese",]
+df_tot_p2 <- df_tot_p2[df_tot_p2$lemma!="miliardo",]
 
 wordcloud(
   df_tot_p2[df_tot_p2$wclass=="noun","lemma"],
@@ -155,6 +158,15 @@ df_tot_p3 <- unique(df_tot_rep_p3)
 df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="<unknown>",]
 df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="anno",]
 df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="banca",]
+df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="potere",]
+df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="crisi",]
+df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="mercato",]
+df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="paese",]
+df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="considerazione",]
+df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="governatore",]
+df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="europeo",]
+df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="economia",]
+
 
 wordcloud(
   df_tot_p3[df_tot_p3$wclass=="noun","lemma"],
@@ -218,20 +230,55 @@ commonality.cloud(
 remove.packages("wordcloud2")
 devtools::install_github("lchiffon/wordcloud2")
 library(wordcloud2)
+df_tot_p1_o <- df_tot_p1%>%
+  arrange(desc(Freq))
 wordcloud2(
-  df_tot_p1[df_tot_p1$wclass=="noun",c(1,3)],
+  df_tot_p1_o[df_tot_p1_o$wclass=="noun",c(1,3)],
+  size = 0.4,
+  minSize = 0.1,
+  rotateRatio = 0.6,
+  fontFamily = "Courier",
+  color = rep(c('pink', 'hotpink'), length.out=nrow(df_tot_p1_o)),
+  backgroundColor = "black",
+  figPath = here('img','pig2.png'),
+  fontWeight = "600"
+)
+colors()[134]
+?wordcloud2
+?display.brewer.all()
+df_tot_p2_o <- df_tot_p2%>%
+  arrange(desc(Freq))
+wordcloud2(
+  df_tot_p2_o[df_tot_p2_o$wclass=="noun",c(1,3)],
+  size = 0.4,
+  minSize = 0,
+  rotateRatio = 0.6,
+  fontFamily = "Courier",
+  color = rep(c('gold', 'darkgoldenrod'), length.out=nrow(df_tot_p2_o)),
+  backgroundColor = "navy",
+  figPath = here('img','euro1.png'),
+  fontWeight = "600"
+)
+
+df_tot_p3_o <- df_tot_p3%>%
+  arrange(desc(Freq))
+wordcloud2(
+  df_tot_p3_o[df_tot_p3_o$wclass=="noun",c(1,3)],
   size = 0.3,
   minSize = 0,
   rotateRatio = 0.6,
-  fontFamily = "Impact",
-  color = "random-light",
-  backgroundColor = "grey2",
-  figPath = here('img','euro.png')
+  fontFamily = "Courier",
+  color = rep(c('red', 'firebrick'), length.out=nrow(df_tot_p3_o)),
+  backgroundColor = "black",
+  figPath = here('img','debt.png'),
+  fontWeight = "600"
 )
+#reale per pubblico è 99
+df_tot_p3[df_tot_p3$lemma=="pubblico","Freq"] <- 70
+df_tot_p3[df_tot_p3$lemma=="pubblico",]
+head(df_tot_p3_o[df_tot_p3_o$wclass=="noun",c(1,3)],15)
 
-str(df_tot_p2[df_tot_p2$wclass=="noun",c(1,3)],25)
-str(df_tot_p1[df_tot_p1$wclass=="noun",c(1,3)],25)
-
+?wordcloud2
 letterCloud(
   df_tot_p2[df_tot_p2$wclass=="noun",c(1,3)],
   "123",
