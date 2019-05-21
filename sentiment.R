@@ -108,3 +108,5 @@ ggplot(df_sent,aes(x=Anno)) +
     theme(
       plot.title = element_text(color = "grey2", size=16, face="bold")
     )
+
+ggplot2::ggsave("sent_pos.png")
