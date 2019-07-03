@@ -125,7 +125,7 @@ docs <- list(tag_cf08,tag_cf09,tag_cf10,tag_cf11,tag_cf12,
           tag_cf13,tag_cf14,tag_cf15,tag_cf16,tag_cf17)
 docs_names <- c("tag_cf08","tag_cf09",str_c("tag_cf",10:17))
 desc <- map(docs, describe)
-
+str(desc[[1]])
 # Numero delle parole
 par(mfrow=c(2,2))
 numero_parole <- NULL
@@ -133,6 +133,7 @@ for (i in 1:10) {
   numero_parole[i] <-  desc[[i]]$words
 }
 numero_parole
+mean(numero_parole)
 barplot(numero_parole,
         names.arg = 2008:2017,
         xlab = "Anni",
@@ -147,6 +148,7 @@ for (i in 1:10) {
   numero_frasi[i] <-  desc[[i]]$sentences
 }
 numero_frasi
+mean(numero_frasi)
 barplot(numero_frasi,
         names.arg = 2008:2017,
         xlab = "Anni",
@@ -177,6 +179,8 @@ for (i in 1:10) {
   media_frasi[i] <-  desc[[i]]$avg.sentc.length
 }
 media_frasi
+mean(media_frasi)
+mean(media_frasi[5:10])
 barplot(media_frasi,
         names.arg = 2008:2017,
         xlab = "Anni",
@@ -539,3 +543,96 @@ ggplot(pie, aes(x = "", y = Prop, fill = Var1)) +
   )
 
 ggplot2::ggsave("pie_partidiscorso.png")
+
+# nuova pie con parti variabili e invariabili del discorso
+# parti variabili
+variabili <- table(taggedText(tag_cf080910)[,"wclass"])[c("noun","verb","adjective","pronoun","determiner")]+table(taggedText(tag_cf11121314)[,"wclass"])[c("noun","verb","adjective","pronoun","determiner")]+table(taggedText(tag_cf151617)[,"wclass"])[c("noun","verb","adjective","pronoun","determiner")]
+variabili
+pie(variabili)
+variabili <- as.data.frame(variabili)
+variabili <- variabili %>%
+  mutate(Prop = round(variabili$Freq/sum(variabili$Freq),2)) %>%
+  arrange(desc(Var1)) %>%
+  mutate(lab.ypos = cumsum(Prop) - 0.5*Prop)
+
+
+var <- ggplot(variabili, aes(x = "", y = Prop, fill = Var1)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0)+
+  geom_text(aes(y = lab.ypos, label = percent(Prop,accuracy = 1)), color = "black")+
+  scale_fill_brewer(palette = "Reds",labels = c("Nomi", "Verbi", "Aggettivi","Pronomi","Articoli")) +
+  theme_void()+
+  #labs(
+  #  title = "(c)",
+  #  x=NULL,
+  #  y=NULL
+  #)+
+  theme(
+    plot.title = element_text(color = "grey2",size = 16),
+    legend.title = element_text(color="white")
+  )
+
+# invariabili
+invariabili <- table(taggedText(tag_cf080910)[,"wclass"])[c("preposition","conjunction","adverb")]+table(taggedText(tag_cf11121314)[,"wclass"])[c("preposition","conjunction","adverb")]+table(taggedText(tag_cf151617)[,"wclass"])[c("preposition","conjunction","adverb")]
+invariabili
+pie(invariabili)
+invariabili <- as.data.frame(invariabili)
+invariabili <- invariabili %>%
+  mutate(Prop = round(invariabili$Freq/sum(invariabili$Freq),2)) %>%
+  arrange(desc(Var1)) %>%
+  mutate(lab.ypos = cumsum(Prop) - 0.5*Prop)
+
+invariabili
+
+invar <- ggplot(invariabili, aes(x = "", y = Prop, fill = Var1)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0)+
+  geom_text(aes(y = lab.ypos, label = percent(Prop,accuracy = 1)), color = "black")+
+  scale_fill_brewer(palette = "Greens",labels = c("Preposizioni", "Congiunzioni", "Avverbi")) +
+  theme_void()+
+  #labs(
+  #  title = "(b)",
+  #  x=NULL,
+  #  y=NULL
+  #)+
+  theme(
+    plot.title = element_text(color = "grey2",size = 16),
+    legend.title = element_text(color="white")
+  )
+
+# ora vorrei vedere quanta parte del discorso è variabile e quanta invariabile
+sum(variabili$Freq)
+sum(invariabili$Freq)
+varinvar <- data.frame("Var1"=c("variabili","invariabili"),"Freq"=c(sum(variabili$Freq),sum(invariabili$Freq)))
+varinvar <- varinvar %>%
+  mutate(Prop = round(varinvar$Freq/sum(varinvar$Freq),2)) %>%
+  arrange(desc(Var1)) %>%
+  mutate(lab.ypos = cumsum(Prop) - 0.5*Prop)
+
+varinvar
+
+varinvarp <- ggplot(varinvar, aes(x = "", y = Prop, fill = Var1)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0)+
+  geom_text(aes(y = lab.ypos, label = percent(Prop,accuracy = 1)), color = "black")+
+  scale_fill_manual(values=c("#41AB5D","#CB181D"),labels = c("Parti invariabili", "Parti variabili")) +
+  theme_void()+
+  #labs(
+  #  title = "(a)",
+  #  x=NULL,
+  #  y=NULL
+  #)+
+  theme(
+    plot.title = element_text(color = "grey2",size = 16),
+    legend.title = element_text(color="white")
+  )
+
+library(RColorBrewer)
+brewer.pal(8,"Greens")
+brewer.pal(8,"Reds")
+
+library(cowplot)
+b <- plot_grid(invar, var, nrow=1,
+                    align = 'v', axis = 'l')
+plot_grid(varinvarp,b, nrow=2)
+ggsave("distribuzione_sunto.png")

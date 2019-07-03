@@ -159,14 +159,15 @@ df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="<unknown>",]
 df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="anno",]
 df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="banca",]
 df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="potere",]
-df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="crisi",]
-df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="mercato",]
 df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="paese",]
 df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="considerazione",]
 df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="governatore",]
-df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="europeo",]
-df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="economia",]
-
+#df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="europeo",]
+# tengo economia, crisi e mercato per la commonalty
+# per la wordcloud del p3 li avevo rimossi
+#df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="economia",]
+#df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="crisi",]
+#df_tot_p3 <- df_tot_p3[df_tot_p3$lemma!="mercato",]
 
 wordcloud(
   df_tot_p3[df_tot_p3$wclass=="noun","lemma"],
@@ -208,13 +209,15 @@ par(mar=rep(0,4))
 comparison.cloud(
   na.omit(df_tot_p123[df_tot_p123$wclass=="noun",c("2008-2010","2011-2014","2014-2017")]),
   scale=c(3,.5),
-  max.words = 250,
+  max.words = 200,
   random.order=FALSE,
-  title.colors = "gold3",
+  title.colors = "#F5F5F5",
   title.size = 1.5,
   use.r.layout = TRUE,
   title.bg.colors = "grey2",
-  col = c("dodgerblue4","brown","darkgreen")
+  #col = c("dodgerblue4","brown","darkgreen"),
+  col = c(brewer.pal(11,"BrBG")[c(3,9)], "black"),
+  family = "mono"
 )
 
 # Commonality cloud
@@ -223,9 +226,14 @@ commonality.cloud(
   scale=c(3,.5),
   max.words = 150,
   random.order=FALSE,
-  colors=rev(brewer.pal(3, "Spectral"))
+  colors= brewer.pal(11,"BrBG")[c(1:5,7:11)],
+  family="mono"
 )
 
+brewer.pal(11,"BrBG")[6]
+display.brewer.all()
+
+?wordcloud
 # wordcloud2
 remove.packages("wordcloud2")
 devtools::install_github("lchiffon/wordcloud2")
@@ -235,11 +243,11 @@ df_tot_p1_o <- df_tot_p1%>%
 wordcloud2(
   df_tot_p1_o[df_tot_p1_o$wclass=="noun",c(1,3)],
   size = 0.4,
-  minSize = 0.1,
+  minSize = 0.3,
   rotateRatio = 0.6,
   fontFamily = "Courier",
-  color = rep(c('pink', 'hotpink'), length.out=nrow(df_tot_p1_o)),
-  backgroundColor = "black",
+  color = rep(c('pink', 'grey'), length.out=nrow(df_tot_p1_o)),
+  backgroundColor = "white",
   figPath = here('img','pig2.png'),
   fontWeight = "600"
 )
@@ -254,8 +262,8 @@ wordcloud2(
   minSize = 0,
   rotateRatio = 0.6,
   fontFamily = "Courier",
-  color = rep(c('gold', 'darkgoldenrod'), length.out=nrow(df_tot_p2_o)),
-  backgroundColor = "navy",
+  color = rep(c('navy', 'darkgoldenrod'), length.out=nrow(df_tot_p2_o)),
+  backgroundColor = "white",
   figPath = here('img','euro1.png'),
   fontWeight = "600"
 )
@@ -269,7 +277,7 @@ wordcloud2(
   rotateRatio = 0.6,
   fontFamily = "Courier",
   color = rep(c('red', 'firebrick'), length.out=nrow(df_tot_p3_o)),
-  backgroundColor = "black",
+  backgroundColor = "white",
   figPath = here('img','debt.png'),
   fontWeight = "600"
 )
